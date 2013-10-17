@@ -1,4 +1,4 @@
-
+ 
 //~--- non-JDK imports --------------------------------------------------------
 
 import com.github.robocup_atan.atan.model.ActionsPlayer;
@@ -48,26 +48,30 @@ public class Simple implements ControllerPlayer {
     /**
      * Constructs a new simple client.
      */
-    public Simple() {
+    public Simple() 
+    {
         random = new Random(System.currentTimeMillis() + count);
         count++;
     }
 
     /** {@inheritDoc} */
     @Override
-    public ActionsPlayer getPlayer() {
+    public ActionsPlayer getPlayer() 
+    {
         return player;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setPlayer(ActionsPlayer p) {
+    public void setPlayer(ActionsPlayer p) 
+    {
         player = p;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void preInfo() {
+    public void preInfo() 
+    {
         canSeeOwnGoal = false;
         canSeeBall    = false;
         canSeeNothing = true;
@@ -75,20 +79,33 @@ public class Simple implements ControllerPlayer {
 
     /** {@inheritDoc} */
     @Override
-    public void postInfo() {
-        if (canSeeNothing) {
+    public void postInfo() 
+    {
+        if (canSeeNothing) 
+        {
             canSeeNothingAction();
-        } else if (canSeeOwnGoal) {
-            if ((distanceOwnGoal < 40) && (distanceOwnGoal > 10)) {
-                canSeeOwnGoalAction();
-            } else if (canSeeBall) {
+        } 
+        else if (canSeeOwnGoal) 
+        {
+            if ((distanceOwnGoal < 40) && (distanceOwnGoal > 10)) 
+            {
+                canSeeOwnGoalAction(); 
+            } 
+            else if (canSeeBall) 
+            {
                 canSeeBallAction();
-            } else {
+            } 
+            else 
+            {
                 canSeeAnythingAction();
             }
-        } else if (canSeeBall) {
+        } 
+        else if (canSeeBall) 
+        {
             canSeeBallAction();
-        } else {
+        } 
+        else 
+        {
             canSeeAnythingAction();
         }
     }
@@ -96,49 +113,56 @@ public class Simple implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagRight(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                 double bodyFacingDirection, double headFacingDirection) {
+                                 double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagLeft(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                double bodyFacingDirection, double headFacingDirection) {
+                                double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
-                               double bodyFacingDirection, double headFacingDirection) {
+                               double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagOther(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                 double bodyFacingDirection, double headFacingDirection) {
+                                 double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagCenter(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                  double bodyFacingDirection, double headFacingDirection) {
+                                  double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagCornerOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                     double bodyFacingDirection, double headFacingDirection) {
+                                     double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagCornerOther(Flag flag, double distance, double direction, double distChange,
-                                       double dirChange, double bodyFacingDirection, double headFacingDirection) {
+                                       double dirChange, double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
@@ -152,16 +176,19 @@ public class Simple implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagPenaltyOther(Flag flag, double distance, double direction, double distChange,
-            double dirChange, double bodyFacingDirection, double headFacingDirection) {
+            double dirChange, double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagGoalOwn(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                   double bodyFacingDirection, double headFacingDirection) {
+                                   double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
-        if (flag == Flag.CENTER) {
+        if (flag == Flag.CENTER) 
+        {
             this.canSeeOwnGoal    = true;
             this.distanceOwnGoal  = distance;
             this.directionOwnGoal = direction;
@@ -171,14 +198,16 @@ public class Simple implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagGoalOther(Flag flag, double distance, double direction, double distChange, double dirChange,
-                                     double bodyFacingDirection, double headFacingDirection) {
+                                     double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
-                            double bodyFacingDirection, double headFacingDirection) {
+                            double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing = false;
     }
 
@@ -195,7 +224,8 @@ public class Simple implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void infoSeeBall(double distance, double direction, double distChange, double dirChange,
-                            double bodyFacingDirection, double headFacingDirection) {
+                            double bodyFacingDirection, double headFacingDirection) 
+    {
         canSeeNothing      = false;
         this.canSeeBall    = true;
         this.distanceBall  = distance;
@@ -207,13 +237,16 @@ public class Simple implements ControllerPlayer {
     public void infoHearReferee(RefereeMessage refereeMessage) {}
 
     /** {@inheritDoc} */
-    @Override
-    public void infoHearPlayMode(PlayMode playMode) {
-        if (playMode == PlayMode.BEFORE_KICK_OFF) {
+    //@Override
+    public void infoHearPlayMode(PlayMode playMode) 
+    {
+        if (playMode == PlayMode.BEFORE_KICK_OFF) 
+        {
             this.pause(1000);
-            switch (this.getPlayer().getNumber()) {
+            switch (this.getPlayer().getNumber()) 
+            {
                 case 1 :
-                    this.getPlayer().move(-10, 0);
+                    this.getPlayer().move(-10, 10);
                     break;
                 case 2 :
                     this.getPlayer().move(-10, 10);
@@ -264,7 +297,8 @@ public class Simple implements ControllerPlayer {
 
     /** {@inheritDoc} */
     @Override
-    public String getType() {
+    public String getType() 
+    {
         return "Simple";
     }
 
@@ -322,10 +356,12 @@ public class Simple implements ControllerPlayer {
     {
         getPlayer().dash(this.randomDashValueFast());
         turnTowardBall();
-        if (distanceBall < 0.7) {
+        if (distanceBall < 0.7) 
+        {
             getPlayer().kick(50, randomKickDirectionValue());
         }
-        if (log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) 
+        {
             log.debug("b(" + directionBall + "," + distanceBall + ")");
         }
     }
@@ -389,7 +425,8 @@ public class Simple implements ControllerPlayer {
     /**
      * Turn towards the ball.
      */
-    private void turnTowardBall() {
+    private void turnTowardBall() 
+    {
         getPlayer().turn(directionBall);
     }
 
@@ -419,8 +456,8 @@ public class Simple implements ControllerPlayer {
         try 
         {
             this.wait(ms);
-        } catch (InterruptedException ex)
-        
+        } 
+        catch (InterruptedException ex)
         {
             log.warn("Interrupted Exception ", ex);
         }

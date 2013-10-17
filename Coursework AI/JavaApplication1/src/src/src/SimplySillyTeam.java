@@ -31,9 +31,12 @@ public class SimplySillyTeam extends AbstractTeam {
      */
     @Override
     public ControllerPlayer getNewControllerPlayer(int number) {
-        if (number == 0) {
+        if (number == 0) 
+        {
             return new Silly();
-        } else {
+        } 
+        else 
+        {
             return new Simple();
         }
     }
@@ -44,7 +47,8 @@ public class SimplySillyTeam extends AbstractTeam {
      * Generates a new coach.
      */
     @Override
-    public ControllerCoach getNewControllerCoach() {
+    public ControllerCoach getNewControllerCoach() 
+    {
         return new Coach();
     }
 }

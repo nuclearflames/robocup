@@ -25,7 +25,8 @@ import java.util.HashMap;
  *
  * @author Atan
  */
-public class Silly implements ControllerPlayer {
+public class Silly implements ControllerPlayer 
+{
     private static Logger log         = Logger.getLogger(Silly.class);
     private double        distBall    = 1000;
     private double        minDistLine = 1000;
@@ -33,20 +34,27 @@ public class Silly implements ControllerPlayer {
 
     /** {@inheritDoc} */
     @Override
-    public void preInfo() {
+    public void preInfo() 
+    {
         distBall    = 1000;
         minDistLine = 1000;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void postInfo() {
-        if (distBall < 10) {
+    public void postInfo() 
+    {
+        if (distBall < 10) 
+        {
             getPlayer().turn(10.0);
             getPlayer().dash(5);
-        } else if (minDistLine < 10) {
+        } 
+        else if (minDistLine < 10) 
+        {
             getPlayer().turn(-90.0);
-        } else {
+        } 
+        else 
+        {
             getPlayer().dash(50);
         }
         log.info("I am a silly Client");
@@ -54,21 +62,25 @@ public class Silly implements ControllerPlayer {
 
     /** {@inheritDoc} */
     @Override
-    public ActionsPlayer getPlayer() {
+    public ActionsPlayer getPlayer() 
+    {
         return player;
     }
 
     /** {@inheritDoc} */
     @Override
-    public void setPlayer(ActionsPlayer p) {
+    public void setPlayer(ActionsPlayer p) 
+    {
         player = p;
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeeLine(Line line, double distance, double direction, double distChange, double dirChange,
-                            double bodyFacingDirection, double headFacingDirection) {
-        if (distance < minDistLine) {
+                            double bodyFacingDirection, double headFacingDirection) 
+    {
+        if (distance < minDistLine) 
+        {
             minDistLine = distance;
         }
     }
@@ -76,7 +88,8 @@ public class Silly implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void infoSeeBall(double distance, double direction, double distChange, double dirChange,
-                            double bodyFacingDirection, double headFacingDirection) {
+                            double bodyFacingDirection, double headFacingDirection) 
+    {
         distBall = distance;
     }
 
@@ -86,9 +99,11 @@ public class Silly implements ControllerPlayer {
 
     /** {@inheritDoc} */
     @Override
-    public void infoHearPlayMode(PlayMode playMode) {
-        if (playMode == PlayMode.BEFORE_KICK_OFF) {
-            getPlayer().move(-30, 30);
+    public void infoHearPlayMode(PlayMode playMode) 
+    {
+        if (playMode == PlayMode.BEFORE_KICK_OFF) 
+        {
+            getPlayer().move(-50, 0);
         }
     }
 
@@ -105,7 +120,8 @@ public class Silly implements ControllerPlayer {
 
     /** {@inheritDoc} */
     @Override
-    public String getType() {
+    public String getType() 
+    {
         return "Silly";
     }
 
