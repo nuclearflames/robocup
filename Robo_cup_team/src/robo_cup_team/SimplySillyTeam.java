@@ -31,8 +31,15 @@ public class SimplySillyTeam extends AbstractTeam {
      */
     @Override
     public ControllerPlayer getNewControllerPlayer(int number) {
+        //This class determines what type of player the object is
+        //Setup the team based initally on the 4-4-2 formation
+        //var number is in array notation, the player numbers are + 1
+        //number = 0 is the goalkeeper
+        //number = 1
         if (number == 0) {
             return new Silly();
+        } else if (number == 1 || number == 2) {
+            return new Attacker();
         } else {
             return new Simple();
         }
