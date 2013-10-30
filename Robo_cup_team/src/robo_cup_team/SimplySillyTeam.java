@@ -1,6 +1,7 @@
 
 //~--- non-JDK imports --------------------------------------------------------
 
+import robo_cup_team.Attacker;
 import com.github.robocup_atan.atan.model.AbstractTeam;
 import com.github.robocup_atan.atan.model.ControllerCoach;
 import com.github.robocup_atan.atan.model.ControllerPlayer;
@@ -41,7 +42,7 @@ public class SimplySillyTeam extends AbstractTeam {
         } else if (number == 1 || number == 2) {
             return new Attacker();
         } else {
-            return new Simple();
+            return new Attacker();
         }
     }
 

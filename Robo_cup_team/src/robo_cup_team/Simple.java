@@ -34,7 +34,6 @@ import java.util.Random;
  */
 public class Simple implements ControllerPlayer {
     private static int    count         = 0;
-    private static Logger log           = Logger.getLogger(Simple.class);
     private Random        random        = null;
     private boolean       canSeeOwnGoal = false;
     private boolean       canSeeNothing = true;
@@ -324,9 +323,6 @@ public class Simple implements ControllerPlayer {
         if (distanceBall < 0.7) {
             getPlayer().kick(50, randomKickDirectionValue());
         }
-        if (log.isDebugEnabled()) {
-            log.debug("b(" + directionBall + "," + distanceBall + ")");
-        }
     }
 
     /**
@@ -335,9 +331,6 @@ public class Simple implements ControllerPlayer {
     private void canSeeAnythingAction() {
         getPlayer().dash(this.randomDashValueSlow());
         getPlayer().turn(20);
-        if (log.isDebugEnabled()) {
-            log.debug("a");
-        }
     }
 
     /**
@@ -345,9 +338,6 @@ public class Simple implements ControllerPlayer {
      */
     private void canSeeNothingAction() {
         getPlayer().turn(180);
-        if (log.isDebugEnabled()) {
-            log.debug("n");
-        }
     }
 
     /**
@@ -356,9 +346,6 @@ public class Simple implements ControllerPlayer {
     private void canSeeOwnGoalAction() {
         getPlayer().dash(this.randomDashValueFast());
         turnTowardOwnGoal();
-        if (log.isDebugEnabled()) {
-            log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-        }
     }
 
     /**
@@ -407,7 +394,6 @@ public class Simple implements ControllerPlayer {
         try {
             this.wait(ms);
         } catch (InterruptedException ex) {
-            log.warn("Interrupted Exception ", ex);
         }
     }
 }

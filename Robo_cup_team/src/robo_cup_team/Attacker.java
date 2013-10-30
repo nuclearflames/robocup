@@ -1,3 +1,4 @@
+package robo_cup_team;
 
 //~--- non-JDK imports --------------------------------------------------------
 
@@ -32,7 +33,7 @@ import robo_cup_team.SeenPlayer;
  */
 public class Attacker implements ControllerPlayer {
     private static int    count         = 0;
-    private static Logger log           = Logger.getLogger(Simple.class);
+    private static Logger log           = Logger.getLogger(Attacker.class);
     private Random        random        = null;
     private boolean       canSeeOwnGoal = false;
     private boolean       canSeeOpponentGoal = false;
@@ -41,20 +42,20 @@ public class Attacker implements ControllerPlayer {
     private double        directionBall;
     private double        directionOwnGoal;
     private double        directionOpponentGoal;
-    private double        distanceBall;
+    private double        distanceBall = 100.0;
     private double        distanceOwnGoal;
     private double        distanceOpponentGoal;
     private ActionsPlayer player;
-    private List<SeenPlayer> ownPlayers = new ArrayList<>();
-    private List<SeenPlayer> otherPlayers = new ArrayList<>();
-    private SeenPlayer    closestPlayer;
+    private List<SeenPlayer> allPlayers = new ArrayList<>();
+    private SeenPlayer    closestPlayer;    
+    private SeenPlayer    closestOtherPlayer;
     static final int      WALKSPEED = 20;
     static final int      JOGSPEED = 50;
     static final int      RUNSPEED = 70;
     static final int      SPRINTSPEED = 100;
     private boolean       hasBall;
     private boolean       contestedBall;
-    static final double   POSSESSIONDISTANCE = 0.7;
+    static final double   POSSESSIONDISTANCE = 0.2;
     /**
      * Constructs a new simple client.
      */
@@ -95,33 +96,70 @@ public class Attacker implements ControllerPlayer {
     public void postInfo() {
         //Evaluate all known data
         evaluateData();
-        //Player will always jog forward at start of action
-        getPlayer().dash(JOGSPEED);
         //Determine the action to make if has/doesn't have ball
         //Also determine the direction to travel
-        if (distanceBall <= POSSESSIONDISTANCE) {
-            actionWithBall();
+
+        if (closestPlayer.distance <= POSSESSIONDISTANCE || closestOtherPlayer.distance <= POSSESSIONDISTANCE) {
+            if (closestOtherPlayer.distance <= POSSESSIONDISTANCE) {
+                getPlayer().turn(closestOtherPlayer.direction + 180);                    
+            } else {
+                getPlayer().turn(closestPlayer.direction + 180);
+            }
+            getPlayer().dash(WALKSPEED);
         } else {
-            actionWithoutBall();
+            if(canSeeBall) {
+                if (distanceBall <= POSSESSIONDISTANCE) {
+                    actionWithBall();
+                } else {
+                    actionWithoutBall();
+                }
+            } else {
+                cantSeeTheBall();
+            }
         }
     }
     
     private void actionWithBall() {
-        if(closestPlayer.distance < POSSESSIONDISTANCE) {
+        if(closestPlayer != null && closestOtherPlayer.distance < POSSESSIONDISTANCE + 1) {
+            //The ball is contested, kick towards teammate
             contestedBall = true;
             hasBall = true;
-            getPlayer().kick(50, 0);
+            kickAtTeamMate();
         } else {
             hasBall = true;
             dribbleWithBall();
         }
-        getPlayer().turn(directionOpponentGoal);
     }
     
     private void actionWithoutBall() {
-        getPlayer().turn(directionOpponentGoal);
+        boolean ourPlayerHasTheBall = false;
+        boolean otherPlayerHasTheBall = false;
+        for (int i = 0; i < allPlayers.size(); i++) {
+            SeenPlayer seen = allPlayers.get(i);
+            
+            log.debug(seen.number);
+            log.debug(seen.hasBall);
+            if (seen.hasBall) {
+                if (seen.isTeammate) {
+                    ourPlayerHasTheBall = true;
+                } else {
+                    otherPlayerHasTheBall = true;
+                }
+            }
+        }
+        if (ourPlayerHasTheBall) {
+            getPlayer().turn(directionOpponentGoal);
+        } else if (otherPlayerHasTheBall) {
+            getPlayer().turn(directionOwnGoal);
+        } else if (ourPlayerHasTheBall == false && otherPlayerHasTheBall == false) {
+            getPlayer().turn(directionBall);
+        }
     }
 
+    private void cantSeeTheBall() {
+        getPlayer().turn(90);
+    }
+    
     /** {@inheritDoc} */
     @Override
     public void infoSeeFlagRight(Flag flag, double distance, double direction, double distChange, double dirChange,
@@ -220,20 +258,20 @@ public class Attacker implements ControllerPlayer {
     @Override
     public void infoSeePlayerOther(int number, boolean goalie, double distance, double direction, double distChange,
                                    double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        otherPlayers.clear();
+        allPlayers.clear();
         SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
-                                 dirChange, bodyFacingDirection, headFacingDirection);
-        otherPlayers.add(seenPlayer);
+                                 dirChange, bodyFacingDirection, headFacingDirection, false, distanceBall, directionBall);
+        allPlayers.add(seenPlayer);
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeePlayerOwn(int number, boolean goalie, double distance, double direction, double distChange,
                                  double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        ownPlayers.clear();
+        allPlayers.clear();
         SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
-                                 dirChange, bodyFacingDirection, headFacingDirection);
-        ownPlayers.add(seenPlayer);
+                                 dirChange, bodyFacingDirection, headFacingDirection, true, distanceBall, directionBall);
+        allPlayers.add(seenPlayer);
     }
 
     /** {@inheritDoc} */
@@ -371,8 +409,8 @@ public class Attacker implements ControllerPlayer {
             getPlayer().kick(1, randomKickDirectionValue());
         } else {
             //Kick the ball to teamate if they are close
-            for (int i = 0; i < ownPlayers.size(); i++) {
-                SeenPlayer s = ownPlayers.get(i);
+            for (int i = 0; i < allPlayers.size(); i++) {
+                SeenPlayer s = allPlayers.get(i);
                 if (s.distance < 20) {
                     turnTowardPlayer(s.direction);
                     getPlayer().kick(50, 0.0);
@@ -408,20 +446,21 @@ public class Attacker implements ControllerPlayer {
     }
 
     private void evaluateData() {
-        //Place as the first player
-        closestPlayer = ownPlayers.get(0);
         //Will calulate the closest player to the player for own and other players
-        for (int i = 0; i < ownPlayers.size() - 1; i++) {
-            SeenPlayer player = ownPlayers.get(i);
+        for (int i = 0; i < allPlayers.size() - 1; i++) {
+            SeenPlayer player = allPlayers.get(i);
             closestPlayer = player;
+            closestOtherPlayer = player;
             if (player.distance < closestPlayer.distance) {
                 closestPlayer = player;
             }
-        }
-        for (int i = 0; i < otherPlayers.size(); i++) {
-            SeenPlayer player = otherPlayers.get(i);
-            if (player.distance < closestPlayer.distance) {
-                closestPlayer = player;
+            if (player.distance < closestOtherPlayer.distance) {
+                closestOtherPlayer = player;
+            }
+            //If within certain bounds then the player has the ball
+            log.debug(player.realDistanceBall);
+            if (player.realDistanceBall == POSSESSIONDISTANCE) {
+                player.hasBall(true);
             }
         }
     }
@@ -478,6 +517,7 @@ public class Attacker implements ControllerPlayer {
 
     //Kicks the ball in forward direction
     private void dribbleWithBall() {
+        getPlayer().turn(directionOpponentGoal);
         getPlayer().kick(10, 0);
     }
     
@@ -505,5 +545,10 @@ public class Attacker implements ControllerPlayer {
         } catch (InterruptedException ex) {
             log.warn("Interrupted Exception ", ex);
         }
+    }
+
+    private void kickAtTeamMate() {
+        getPlayer().turn(closestPlayer.direction);
+        getPlayer().kick(50, 0);
     }
 }

@@ -26,7 +26,6 @@ import java.util.HashMap;
  * @author Atan
  */
 public class Silly implements ControllerPlayer {
-    private static Logger log         = Logger.getLogger(Silly.class);
     private double        distBall    = 1000;
     private double        minDistLine = 1000;
     private ActionsPlayer player;
@@ -49,7 +48,6 @@ public class Silly implements ControllerPlayer {
         } else {
             getPlayer().dash(50);
         }
-        log.info("I am a silly Client");
     }
 
     /** {@inheritDoc} */
