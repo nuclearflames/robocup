@@ -1,10 +1,10 @@
 
 //~--- non-JDK imports --------------------------------------------------------
 
-import robo_cup_team.Attacker;
 import com.github.robocup_atan.atan.model.AbstractTeam;
 import com.github.robocup_atan.atan.model.ControllerCoach;
 import com.github.robocup_atan.atan.model.ControllerPlayer;
+import robo_cup_team.Simple;
 
 /**
  * A class to setup a Simple Silly AbstractTeam.
@@ -37,13 +37,7 @@ public class SimplySillyTeam extends AbstractTeam {
         //var number is in array notation, the player numbers are + 1
         //number = 0 is the goalkeeper
         //number = 1
-        if (number == 0) {
-            return new Silly();
-        } else if (number == 1 || number == 2) {
-            return new Attacker();
-        } else {
-            return new Attacker();
-        }
+        return new Simple();
     }
 
     /**
