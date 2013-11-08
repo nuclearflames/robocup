@@ -51,14 +51,22 @@ public class Simple implements ControllerPlayer {
     private double        distanceBall;
     private double        distanceOwnGoal;
     private ActionsPlayer player;
-    private List<SeenPlayer> allPlayers = new ArrayList<>();
     private SeenPlayer    closestPlayer;    
     private SeenPlayer    closestOtherPlayer;
+    
+    //JG variables
+    private List<SeenPlayer> allPlayers = new ArrayList<>();
+    
     static final int      WALKSPEED = 20;
     static final int      JOGSPEED = 50;
     static final int      RUNSPEED = 70;
     static final int      SPRINTSPEED = 100;
-
+    static double         POSSESSIONDISTANCE = 2.0;
+    
+    private double        finalKickDirection = 0.0;
+    private int           finalKickPower = 0;
+    private int           finalRunPower = 30;
+    private double        finalTurnDirection = 0;
     /**
      * Constructs a new simple client.
      */
@@ -90,26 +98,34 @@ public class Simple implements ControllerPlayer {
     /** {@inheritDoc} */
     @Override
     public void postInfo() {
-        if (canSeeNothing) {
-            log.info("Can see nothing");
-            canSeeNothingAction();
-        } else if (canSeeOwnGoal) {
-            log.info("Can see own goal");
-            if ((distanceOwnGoal < 40) && (distanceOwnGoal > 10)) {
-                canSeeOwnGoalAction();
-            } else if (canSeeBall) {
-            log.info("Can see ball");
-                canSeeBallAction();
-            } else {
-                log.info("Can see Anything");
-                canSeeAnythingAction();
-            }
-        } else if (canSeeBall) {
-            log.info("Can see Ball");
-            canSeeBallAction();
-        } else {
-            log.info("Can see Anything");
-            canSeeAnythingAction();
+        switch (this.getPlayer().getNumber()) {
+            case 2:
+            case 3:
+                if (canSeeNothing) {
+                    log.info("Can see nothing");
+                    canSeeNothingAction();
+                } else if (canSeeOwnGoal) {
+                    if ((distanceOwnGoal < 40) && (distanceOwnGoal > 10)) {
+                        log.info("Can see own goal");
+                        canSeeOwnGoalAction();
+                    } else if (canSeeBall) {
+                        log.info("Can see ball");
+                        canSeeBallAction();
+                    } else {
+                        log.info("Can see Anything");
+                        canSeeAnythingAction();
+                    }
+                } else if (canSeeBall) {
+                    log.info("Can see Ball");
+                    canSeeBallAction();
+                } else {
+                    log.info("Can see Anything");
+                    canSeeAnythingAction();
+                }
+                getPlayer().turn(finalTurnDirection);
+                getPlayer().kick(finalKickPower, finalKickDirection);
+                getPlayer().dash(finalRunPower);
+                break;
         }
     }
 
@@ -211,6 +227,9 @@ public class Simple implements ControllerPlayer {
         allPlayers.clear();
         SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
                                  dirChange, bodyFacingDirection, headFacingDirection, false);
+        if (canSeeBall == true) {
+            seenPlayer.calculateDistance(distanceBall, distance, directionBall, direction);
+        }
         allPlayers.add(seenPlayer);
     }
 
@@ -221,7 +240,9 @@ public class Simple implements ControllerPlayer {
         allPlayers.clear();
         SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
                                  dirChange, bodyFacingDirection, headFacingDirection, true);
-        seenPlayer.
+        if (canSeeBall == true) {
+            seenPlayer.calculateDistance(distanceBall, distance, directionBall, direction);
+        }
         allPlayers.add(seenPlayer);
     }
 
@@ -233,6 +254,9 @@ public class Simple implements ControllerPlayer {
         this.canSeeBall    = true;
         this.distanceBall  = distance;
         this.directionBall = direction;
+        if (distance < POSSESSIONDISTANCE) {
+            this.inPossession = true;
+        }
     }
 
     /** {@inheritDoc} */
@@ -360,15 +384,20 @@ public class Simple implements ControllerPlayer {
                     break;
                 case 2 :
                 case 3 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    turnTowardBall();
-                    if (distanceBall < 0.7) {
-                        inPossession = true;
+                    //If the player has the ball kick it at a teammate
+                    //Else determine whether to run for the ball or let someone else keep it
+                    if (inPossession) {
                         kickAtTeamMate();
                     } else {
                         //if noone has the ball turn to it else run into space
-                        if ()
-                        runIntoSpace();
+                        if (doesHaveBall() == false) {
+                            log.info("Turned toward ball");
+                            turnTowardBall();
+                        } else {
+                            if (runIntoSpace() == false) {
+                                log.info("Turned into space");
+                            }
+                        }
                     }
                     break;
                 case 4 :
@@ -468,20 +497,14 @@ public class Simple implements ControllerPlayer {
                 case 2 :
                 case 3 :
                     log.debug("Can see anything action");
-                    boolean avoided = false;
-                    //Player will run forward avoiding all players
-                    getPlayer().dash(this.randomDashValueFast());
-                    for (int i = 0; i < allPlayers.size(); i++) {
-                        SeenPlayer player = allPlayers.get(i);
-                        if (player.distance < 2.0) {
-                            getPlayer().turn(player.direction * 2);
-                            avoided = true;
-                            log.info("avoided" + getPlayer().getNumber());
+                    //Will run the player into space if it has to avoid players it avoids, else it turns to the ball
+                    if (runIntoSpace() == false) {
+                        //If theres noone to avoid then turn to ball
+                        if (canSeeBall) {
+                            turnTowardBall();
+                        } else {
+                            turnAround();
                         }
-                    }
-                    //If theres noone to avoid in turn to ball
-                    if (avoided == false) {
-                        turnTowardBall();
                     }
                     break;
                 case 4 :
@@ -551,7 +574,7 @@ public class Simple implements ControllerPlayer {
                 case 3 :
                     turnTowardBall();
                     //Attacker 1, if player sees nothing it will turn 180
-                    getPlayer().turn(180);
+                    finalTurnDirection = 180;
                     break;
                 case 4 :
                     turnTowardBall();
@@ -625,9 +648,8 @@ public class Simple implements ControllerPlayer {
                     if (canSeeOpponentGoal) {
                         turnTowardOpponentGoal();
                     } else {
-                        getPlayer().turn(180);
+                        finalTurnDirection = 180;
                     }
-                    getPlayer().dash(this.randomDashValueFast());
                     if (log.isDebugEnabled()) {
                         log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
                     }
@@ -713,7 +735,20 @@ public class Simple implements ControllerPlayer {
      * Turn towards the ball.
      */
     private void turnTowardBall() {
-        getPlayer().turn(directionBall);
+        finalTurnDirection = directionBall;
+    }
+
+                        
+    private boolean doesHaveBall() {
+        for (int i = 0; i < allPlayers.size(); i++) {
+            SeenPlayer player = allPlayers.get(i);
+            log.info(player.distanceFromBall);
+            if (player.distanceFromBall < POSSESSIONDISTANCE) {
+                log.info("true");
+                return true;
+            }
+        }
+        return false;                            
     }
 
     /**
@@ -739,7 +774,8 @@ public class Simple implements ControllerPlayer {
     }
     
     private void dibbleBall() {
-        getPlayer().kick(5, 0);
+        this.finalKickPower = 5;
+        this.finalKickDirection = 0;
     }
     
     private void kickAtTeamMate() {
@@ -747,13 +783,32 @@ public class Simple implements ControllerPlayer {
         //Will kick towards the first player over a certain distance
         for (int i = 0; i < allPlayers.size(); i++) {
             SeenPlayer player = allPlayers.get(i);
-            if (player.distance > 5.0) {
-                getPlayer().kick(50, player.direction);
+            if (player.distance > POSSESSIONDISTANCE) {
+                //Cast double to int for kick distance
+                Double d = player.distance; Integer in = d.intValue();
+                
+                this.finalKickPower = in;
+                this.finalKickDirection = player.direction; 
                 kicked = true;
             }
         }
+        //If the ball hasn't been kicked then the player can't see any other useful players
+        //Therefore they will turn to the opponent goal using a series of kicks and run with the ball
         if (!kicked) {
-            dibbleBall();
+            if (!Double.isNaN(directionOpponentGoal)) {
+                if (directionOpponentGoal < -25.0 || directionOpponentGoal > 25.0) {
+                    //Turn player towards opponents goal slowly to avoid loosing the ball
+                this.finalKickPower = 3;
+                this.finalKickDirection = 20; 
+                } else {
+                    finalTurnDirection = directionOpponentGoal;
+                    dibbleBall();
+                }
+            } else {
+                //Turn player towards opponents goal slowly to avoid loosing the ball
+                this.finalKickPower = 3;
+                this.finalKickDirection = 20; 
+            }
         }
     }
 
@@ -769,19 +824,26 @@ public class Simple implements ControllerPlayer {
         }
     }
 
-    private void runIntoSpace() {
-        //Will run the player into space
+    //Will run the player into space avoiding players returns true if player had to be avoided
+    //Determines which team has the ball and decides whether to retreat or attack
+    private boolean runIntoSpace() {
+        Boolean status = false;
         for (int i = 0; i < allPlayers.size(); i++) {
             SeenPlayer player = allPlayers.get(i);
-            if (player.direction > -5 && player.direction < 5) {
+            if (player.direction > -5 && player.direction < 5 && player.distance < 3.0) {
                 if (player.direction > -5) {
-                    getPlayer().turn(player.direction + 45);                    
+                    finalTurnDirection = player.direction + 45;                    
                 } else {
-                    getPlayer().turn(player.direction - 45);
+                    finalTurnDirection = player.direction - 45;
                 }
+                status = true;
             }
         }
-        getPlayer().dash(JOGSPEED);
+        return status;
+    }
+
+    private void turnAround() {
+        getPlayer().turn(90);
     }
 }
 //Storage of the seen player inside memory, just returns all of the values
@@ -798,6 +860,7 @@ class SeenPlayer {
     public double headFacingDirection;
     public boolean hasBall;
     public boolean isTeammate;
+    public double distanceFromBall;
 
     public SeenPlayer (int num, boolean goal, double dist, double dir, double distC,
                                  double dirC, double bod, double head, boolean teamMate) {
@@ -813,11 +876,15 @@ class SeenPlayer {
         hasBall = false;
     }
     
-    public double calculateDistance(double distanceA, double distanceB, double angle) {
-        //Calculates distance from ball based on cosine        
-        double cos = Math.pow(distanceB, 2) + Math.pow(distance, 2) - 2 * (distanceB*distance) * Math.cos(angle);
-        return Math.sqrt(cos);
-
+    //Takes distance to the ball, then the player, then the angle the ball is at and then angle that the other player is at relative to the player
+    public void calculateDistance(double distanceA, double distanceB, double angleA, double angleB) {
+        //Calulate the angle that the ball/player is at relative
+        double angleC = angleA - angleB;
+        //Calculates distance of player from ball based on cosine
+        //Based on rule here: http://www.mathstat.strath.ac.uk/basicmaths/332_sineandcosinerules.html
+        double cosSq = Math.pow(distanceA, 2) + Math.pow(distanceB, 2) - ((2 * (distanceA*distanceB)) * Math.cos(angleC));
+        double result = Math.round(Math.sqrt(cosSq));
+        distanceFromBall = result;
     }
     
 }
