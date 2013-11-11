@@ -250,8 +250,7 @@ public class Simple implements ControllerPlayer {
         this.distanceBall  = distance;
         this.directionBall = direction;
         switch (this.getPlayer().getNumber()) {
-            case 2:
-            case 3:
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                 log.info(distance + ", " + jgPOSSESSIONDISTANCE); 
                 if (distance < jgPOSSESSIONDISTANCE) {
                     log.info("inPossession"); 
@@ -268,8 +267,7 @@ public class Simple implements ControllerPlayer {
     public void infoSeePlayerOther(int number, boolean goalie, double distance, double direction, double distChange,
                                    double dirChange, double bodyFacingDirection, double headFacingDirection) {
         switch (this.getPlayer().getNumber()) {
-            case 2 :
-            case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                 SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
                                          dirChange, bodyFacingDirection, headFacingDirection, false);
                 if (canSeeBall == true) {
@@ -288,8 +286,7 @@ public class Simple implements ControllerPlayer {
     public void infoSeePlayerOwn(int number, boolean goalie, double distance, double direction, double distChange,
                                  double dirChange, double bodyFacingDirection, double headFacingDirection) {
         switch (this.getPlayer().getNumber()) {
-            case 2 :
-            case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                 SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
                                          dirChange, bodyFacingDirection, headFacingDirection, true);
                 if (canSeeBall == true) {
@@ -468,8 +465,10 @@ public class Simple implements ControllerPlayer {
                         //if noone has the ball turn to it else run into space
                         if (jgPlayerDoesHaveBall() == true) {
                             jgrunIntoSpace();
+                            log.info("run into space");
                         } else {
                             jgturnTowardBall();
+                            log.info("run toward ball");
                         }
                     }
                     break;
@@ -675,14 +674,20 @@ public class Simple implements ControllerPlayer {
         for (int i = 0; i < jgallPlayers.size(); i++) {
             SeenPlayer player = jgallPlayers.get(i);
             log.info(player.distance);
-            if (player.direction > -15 && player.direction < 15 && player.distance < 3.0) {
+            if (player.direction > -15 && player.direction < 15 && player.distance < 10.0) {
                 if (player.direction > -15) {
                     jgfinalTurnDirection = player.direction + 45;                    
                 } else {
                     jgfinalTurnDirection = player.direction - 45;
                 }
                 status = true;
-            }
+            } else {
+                if (canSeeOwnGoal) {
+                    jgfinalTurnDirection = -180;
+                } else {
+                    jgfinalTurnDirection = 180;
+                }
+            }            
         }
         return status;
     }
