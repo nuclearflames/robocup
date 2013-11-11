@@ -43,32 +43,30 @@ public class Simple implements ControllerPlayer {
     private boolean       canSeeOwnGoal = false;
     private boolean       canSeeNothing = true;
     private boolean       canSeeBall    = false;
-    private boolean       canSeeOpponentGoal = false;
-    private boolean       inPossession = false;
     private double        directionBall;
     private double        directionOwnGoal;
-    private double        directionOpponentGoal;
     private double        distanceBall;
     private double        distanceOwnGoal;
     private ActionsPlayer player;
-    private SeenPlayer    closestPlayer;
-    private SeenPlayer    closestOtherPlayer;
     
     //JG variables
     private List<SeenPlayer> allPlayers = new ArrayList<>();
     
-    static final int      WALKSPEED = 20;
-    static final int      JOGSPEED = 50;
-    static final int      RUNSPEED = 70;
-    static final int      SPRINTSPEED = 100;
-    static double         POSSESSIONDISTANCE = 1.0;
+    static final int      jgWALKSPEED = 20;
+    static final int      jgJOGSPEED = 50;
+    static final int      jgRUNSPEED = 70;
+    static final int      jgSPRINTSPEED = 100;
+    static double         jgPOSSESSIONDISTANCE = 1.0;
     
-    private double        finalKickDirection = 0.0;
-    private int           finalKickPower = 0;
-    private int           finalRunPower = 60;
-    private double        finalTurnDirection = 0;
-    private boolean       playOn = false;
-    private boolean       runForBall = true;
+    private double        jgfinalKickDirection = 0.0;
+    private int           jgfinalKickPower = 0;
+    private int           jgfinalRunPower = 60;
+    private double        jgfinalTurnDirection = 0;
+    private boolean       jgplayOn = false;
+    private boolean       jgrunForBall = true;
+    private boolean       jgcanSeeOpponentGoal = false;
+    private boolean       jginPossession = false;
+    private double        jgdirectionOpponentGoal;
     
     /**
      * Constructs a new simple client.
@@ -96,14 +94,14 @@ public class Simple implements ControllerPlayer {
         canSeeOwnGoal = false;
         canSeeBall    = false;
         canSeeNothing = true;
-        inPossession = false;
+        jginPossession = false;
         allPlayers.clear();
     
-        finalKickDirection = 0.0;
-        finalKickPower = 0;
-        finalRunPower = 60;
-        finalTurnDirection = 0;
-        runForBall = false;
+        jgfinalKickDirection = 0.0;
+        jgfinalKickPower = 0;
+        jgfinalRunPower = 60;
+        jgfinalTurnDirection = 0;
+        jgrunForBall = false;
     }
 
     /** {@inheritDoc} */
@@ -133,20 +131,20 @@ public class Simple implements ControllerPlayer {
                     log.info("Can see Anything");
                     canSeeAnythingAction();
                 }
-                if (finalRunPower != 0.0) {
-                    if (this.playOn == true) {
-                        getPlayer().dash(finalRunPower);                        
-                    } else if (this.playOn == false) {
-                        if (this.distanceBall > POSSESSIONDISTANCE) {
-                            getPlayer().dash(finalRunPower);                            
+                if (jgfinalRunPower != 0.0) {
+                    if (this.jgplayOn == true) {
+                        getPlayer().dash(jgfinalRunPower);                        
+                    } else if (this.jgplayOn == false) {
+                        if (this.distanceBall > jgPOSSESSIONDISTANCE) {
+                            getPlayer().dash(jgfinalRunPower);                            
                         }                        
                     }
                 }
-                if (finalTurnDirection != 0) {
-                    getPlayer().turn(finalTurnDirection);
+                if (jgfinalTurnDirection != 0) {
+                    getPlayer().turn(jgfinalTurnDirection);
                 }
-                if (finalKickPower != 0 && playOn) {
-                    getPlayer().kick(finalKickPower, finalKickDirection);
+                if (jgfinalKickPower != 0 && jgplayOn) {
+                    getPlayer().kick(jgfinalKickPower, jgfinalKickDirection);
                 }
                 break;
         }
@@ -232,8 +230,8 @@ public class Simple implements ControllerPlayer {
     public void infoSeeFlagGoalOther(Flag flag, double distance, double direction, double distChange, double dirChange,
                                      double bodyFacingDirection, double headFacingDirection) {
         canSeeNothing = false;
-        canSeeOpponentGoal = true;
-        directionOpponentGoal = direction;
+        jgcanSeeOpponentGoal = true;
+        jgdirectionOpponentGoal = direction;
     }
 
     /** {@inheritDoc} */
@@ -252,12 +250,12 @@ public class Simple implements ControllerPlayer {
         this.distanceBall  = distance;
         this.directionBall = direction;
         getPlayer().say("going for ball");
-        log.info(distance + ", " + POSSESSIONDISTANCE); 
-        if (distance < POSSESSIONDISTANCE) {
+        log.info(distance + ", " + jgPOSSESSIONDISTANCE); 
+        if (distance < jgPOSSESSIONDISTANCE) {
             log.info("inPossession"); 
-            this.inPossession = true;
+            this.jginPossession = true;
         } else {
-            this.inPossession = false;
+            this.jginPossession = false;
         }
     }
 
@@ -345,7 +343,7 @@ public class Simple implements ControllerPlayer {
                     break;
                 case 2 :
                 case 3 :
-                    this.playOn = true;                     
+                    this.jgplayOn = true;                     
                     break;
                 case 4 :
                     this.getPlayer().move(-20, 0);
@@ -375,7 +373,7 @@ public class Simple implements ControllerPlayer {
                     throw new Error("number must be initialized before move");
             }
         } else if (playMode != PlayMode.PLAY_ON) {
-                this.playOn = false; 
+                this.jgplayOn = false; 
         }
     }
 
@@ -389,7 +387,7 @@ public class Simple implements ControllerPlayer {
                 case 2 :
                 case 3 :
                     if (message == "going for ball") {
-                        this.runForBall = false;
+                        this.jgrunForBall = false;
                     }                     
                     break;
                 case 4 :
@@ -495,12 +493,12 @@ public class Simple implements ControllerPlayer {
                 case 3 :
                     //If the player has the ball kick it at a teammate
                     //Else determine whether to run for the ball or let someone else keep it
-                    if (inPossession == true) {
+                    if (jginPossession == true) {
                         log.info("kick at teammate");
                         kickAtTeamMate();
                     } else {
                         //if noone has the ball turn to it else run into space
-                        if (doesHaveBall() == false && runForBall == true) {
+                        if (doesHaveBall() == false && jgrunForBall == true) {
                             log.info("Turned toward ball");
                             turnTowardBall();
                         } else {
@@ -683,7 +681,7 @@ public class Simple implements ControllerPlayer {
                 case 2 :
                 case 3 :
                     //Attacker 1, if player sees nothing it will turn 180
-                    finalTurnDirection = 180;
+                    jgfinalTurnDirection = 180;
                     break;
                 case 4 :
                     turnTowardBall();
@@ -754,10 +752,10 @@ public class Simple implements ControllerPlayer {
                 case 2 :
                 case 3 :
                     //Attacker does not go near goal so will run out to midfield
-                    if (canSeeOpponentGoal) {
+                    if (jgcanSeeOpponentGoal) {
                         turnTowardOpponentGoal();
                     } else {
-                        finalTurnDirection = 180;
+                        jgfinalTurnDirection = 180;
                     }
                     if (log.isDebugEnabled()) {
                         log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
@@ -844,7 +842,7 @@ public class Simple implements ControllerPlayer {
      * Turn towards the ball.
      */
     private void turnTowardBall() {
-        finalTurnDirection = directionBall;
+        jgfinalTurnDirection = directionBall;
     }
 
                         
@@ -871,7 +869,7 @@ public class Simple implements ControllerPlayer {
      * Turn towards our goal.
      */
     private void turnTowardOpponentGoal() {
-        getPlayer().turn(directionOpponentGoal);
+        getPlayer().turn(jgdirectionOpponentGoal);
     }
 
     /**
@@ -883,8 +881,8 @@ public class Simple implements ControllerPlayer {
     }
     
     private void dibbleBall() {
-        this.finalKickPower = 5;
-        this.finalKickDirection = 0;
+        this.jgfinalKickPower = 5;
+        this.jgfinalKickDirection = 0;
     }
     
     private void kickAtTeamMate() {
@@ -892,12 +890,12 @@ public class Simple implements ControllerPlayer {
         //Will kick towards the first player over a certain distance
         for (int i = 0; i < allPlayers.size(); i++) {
             SeenPlayer player = allPlayers.get(i);
-            if (player.distance > POSSESSIONDISTANCE) {
+            if (player.distance > jgPOSSESSIONDISTANCE) {
                 //Cast double to int for kick distance
                 Double d = player.distance; Integer in = d.intValue();
                 
-                this.finalKickPower = in;
-                this.finalKickDirection = player.direction; 
+                this.jgfinalKickPower = in;
+                this.jgfinalKickDirection = player.direction; 
                 kicked = true;
                 log.info("Ball was kicked to teammate");
             }
@@ -906,19 +904,19 @@ public class Simple implements ControllerPlayer {
         //Therefore they will turn to the opponent goal using a series of kicks and run with the ball
         if (!kicked) {
             log.info("Ball not kicked, turn to op goal");
-            if (canSeeOpponentGoal) {
-                if (directionOpponentGoal < -25.0 || directionOpponentGoal > 25.0) {
+            if (jgcanSeeOpponentGoal) {
+                if (jgdirectionOpponentGoal < -25.0 || jgdirectionOpponentGoal > 25.0) {
                     //Turn player towards opponents goal slowly to avoid loosing the ball
-                    this.finalKickPower = 3;
-                    this.finalKickDirection = 20; 
+                    this.jgfinalKickPower = 3;
+                    this.jgfinalKickDirection = 20; 
                 } else {
-                    finalTurnDirection = directionOpponentGoal;
+                    jgfinalTurnDirection = jgdirectionOpponentGoal;
                     dibbleBall();
                 }
             } else {
                 //Turn player towards opponents goal slowly to avoid loosing the ball
-                this.finalKickPower = 3;
-                this.finalKickDirection = 20; 
+                this.jgfinalKickPower = 3;
+                this.jgfinalKickDirection = 20; 
             }
         }
     }
@@ -943,9 +941,9 @@ public class Simple implements ControllerPlayer {
             SeenPlayer player = allPlayers.get(i);
             if (player.direction > -15 && player.direction < 15 && player.distance < 3.0) {
                 if (player.direction > -15) {
-                    finalTurnDirection = player.direction + 45;                    
+                    jgfinalTurnDirection = player.direction + 45;                    
                 } else {
-                    finalTurnDirection = player.direction - 45;
+                    jgfinalTurnDirection = player.direction - 45;
                 }
                 status = true;
             }
