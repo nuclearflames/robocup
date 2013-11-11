@@ -50,7 +50,7 @@ public class Simple implements ControllerPlayer {
     private ActionsPlayer player;
     
     //JG variables
-    private List<SeenPlayer> allPlayers = new ArrayList<>();
+    private List<SeenPlayer> jgallPlayers = new ArrayList<>();
     
     static final int      jgWALKSPEED = 20;
     static final int      jgJOGSPEED = 50;
@@ -95,7 +95,7 @@ public class Simple implements ControllerPlayer {
         canSeeBall    = false;
         canSeeNothing = true;
         jginPossession = false;
-        allPlayers.clear();
+        jgallPlayers.clear();
     
         jgfinalKickDirection = 0.0;
         jgfinalKickPower = 0;
@@ -263,7 +263,7 @@ public class Simple implements ControllerPlayer {
     @Override
     public void infoSeePlayerOther(int number, boolean goalie, double distance, double direction, double distChange,
                                    double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        allPlayers.clear();
+        jgallPlayers.clear();
         SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
                                  dirChange, bodyFacingDirection, headFacingDirection, false);
         if (canSeeBall == true) {
@@ -271,14 +271,14 @@ public class Simple implements ControllerPlayer {
         } else {
             seenPlayer.distanceFromBall = 1000;
         }
-        allPlayers.add(seenPlayer);
+        jgallPlayers.add(seenPlayer);
     }
 
     /** {@inheritDoc} */
     @Override
     public void infoSeePlayerOwn(int number, boolean goalie, double distance, double direction, double distChange,
                                  double dirChange, double bodyFacingDirection, double headFacingDirection) {
-        allPlayers.clear();
+        jgallPlayers.clear();
         SeenPlayer seenPlayer = new SeenPlayer(number, goalie, distance, direction, distChange,
                                  dirChange, bodyFacingDirection, headFacingDirection, true);
         if (canSeeBall == true) {
@@ -286,7 +286,7 @@ public class Simple implements ControllerPlayer {
         } else {
             seenPlayer.distanceFromBall = 1000;
         }
-        allPlayers.add(seenPlayer);
+        jgallPlayers.add(seenPlayer);
     }
 
     /** {@inheritDoc} */
@@ -847,8 +847,8 @@ public class Simple implements ControllerPlayer {
 
                         
     private boolean doesHaveBall() {
-        for (int i = 0; i < allPlayers.size(); i++) {
-            SeenPlayer player = allPlayers.get(i);
+        for (int i = 0; i < jgallPlayers.size(); i++) {
+            SeenPlayer player = jgallPlayers.get(i);
             log.info(player.distanceFromBall);
             if (player.distanceFromBall < 5.0) {
                 log.info("true");
@@ -888,8 +888,8 @@ public class Simple implements ControllerPlayer {
     private void kickAtTeamMate() {
         boolean kicked = false;
         //Will kick towards the first player over a certain distance
-        for (int i = 0; i < allPlayers.size(); i++) {
-            SeenPlayer player = allPlayers.get(i);
+        for (int i = 0; i < jgallPlayers.size(); i++) {
+            SeenPlayer player = jgallPlayers.get(i);
             if (player.distance > jgPOSSESSIONDISTANCE) {
                 //Cast double to int for kick distance
                 Double d = player.distance; Integer in = d.intValue();
@@ -937,8 +937,8 @@ public class Simple implements ControllerPlayer {
     //Determines which team has the ball and decides whether to retreat or attack
     private boolean runIntoSpace() {
         Boolean status = false;
-        for (int i = 0; i < allPlayers.size(); i++) {
-            SeenPlayer player = allPlayers.get(i);
+        for (int i = 0; i < jgallPlayers.size(); i++) {
+            SeenPlayer player = jgallPlayers.get(i);
             if (player.direction > -15 && player.direction < 15 && player.distance < 3.0) {
                 if (player.direction > -15) {
                     jgfinalTurnDirection = player.direction + 45;                    

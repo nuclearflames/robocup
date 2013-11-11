@@ -4,6 +4,7 @@
 import com.github.robocup_atan.atan.model.AbstractTeam;
 import com.github.robocup_atan.atan.model.ControllerCoach;
 import com.github.robocup_atan.atan.model.ControllerPlayer;
+import robo_cup_team.Simple;
 
 /**
  * A class to setup a Simple Silly AbstractTeam.
@@ -31,11 +32,7 @@ public class SimplySillyTeam extends AbstractTeam {
      */
     @Override
     public ControllerPlayer getNewControllerPlayer(int number) {
-        if (number == 0) {
-            return new Silly();
-        } else {
-            return new Simple();
-        }
+        return new Simple();
     }
 
     /**
