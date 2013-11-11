@@ -109,8 +109,7 @@ public class Simple implements ControllerPlayer {
     @Override
     public void postInfo() {
         switch (this.getPlayer().getNumber()) {
-            case 2:
-            case 3:
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                 if (canSeeNothing) {
                     log.info("Can see nothing");
                     canSeeNothingAction();
@@ -355,33 +354,9 @@ public class Simple implements ControllerPlayer {
                 case 1 :
                     this.getPlayer().move(-50, 0);                 
                     break;
-                case 2 :
-                case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
+
                     this.jgplayOn = true;                     
-                    break;
-                case 4 :
-                    this.getPlayer().move(-20, 0);
-                    break;
-                case 5 :
-                    this.getPlayer().move(-25, 10);
-                    break;
-                case 6 :
-                    this.getPlayer().move(-25, -10);
-                    break;
-                case 7 :
-                    this.getPlayer().move(-20, 20);
-                    break;
-                case 8 :
-                    this.getPlayer().move(-20, -20);
-                    break;
-                case 9 :
-                    this.getPlayer().move(-36, 0);
-                    break;
-                case 10 :
-                    this.getPlayer().move(-30, 15);
-                    break;
-                case 11 :
-                    this.getPlayer().move(-30, -15);
                     break;
                 default :
                     throw new Error("number must be initialized before move");
@@ -399,38 +374,12 @@ public class Simple implements ControllerPlayer {
                 case 1 :
                     this.getPlayer().move(-50, 0);                 
                     break;
-                case 2 :
-                case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                     log.info("Hear Message: " + message);
                     if (message == "going for ball") {
                         log.info("Hear Message: " + "going for ball");
                         //this.jgMakeRunForBall = false;
-                    }                     
-                    break;
-                case 4 :
-                    this.getPlayer().move(-20, 0);
-                    break;
-                case 5 :
-                    this.getPlayer().move(-25, 10);
-                    break;
-                case 6 :
-                    this.getPlayer().move(-25, -10);
-                    break;
-                case 7 :
-                    this.getPlayer().move(-20, 20);
-                    break;
-                case 8 :
-                    this.getPlayer().move(-20, -20);
-                    break;
-                case 9 :
-                    this.getPlayer().move(-36, 0);
-                    break;
-                case 10 :
-                    this.getPlayer().move(-30, 15);
-                    break;
-                case 11 :
-                    this.getPlayer().move(-30, -15);
-                    break;
+                    }    
                 default :
                     throw new Error("number must be initialized before move");
             }
@@ -506,8 +455,7 @@ public class Simple implements ControllerPlayer {
                         log.debug("b(" + directionBall + "," + distanceBall + ")");
                     }
                     break;
-                case 2 :
-                case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                     if (jgMakeRunForBall == true) {
                         this.getPlayer().say("going for ball");
                     }
@@ -518,98 +466,11 @@ public class Simple implements ControllerPlayer {
                         jgkickAtTeamMate();
                     } else {
                         //if noone has the ball turn to it else run into space
-                        if (jgPlayerDoesHaveBall() == false) {
-                            if (jgMakeRunForBall == false) {
-                                log.info("Turned toward ball");
-                                jgrunIntoSpace();
-                            } else {
-                                jgturnTowardBall();
-                            }
+                        if (jgPlayerDoesHaveBall() == true) {
+                            jgrunIntoSpace();
                         } else {
-                            if (jgrunIntoSpace() == false) {
-                                log.info("Turned into space");
-                            }
+                            jgturnTowardBall();
                         }
-                    }
-                    break;
-                case 4 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 5 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 6 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 7 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 8 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 9 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 10 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
-                    }
-                    break;
-                case 11 :
-                    getPlayer().dash(this.randomDashValueFast());
-                    jgturnTowardBall();
-                    if (distanceBall < 0.7) {
-                        getPlayer().kick(50, randomKickDirectionValue());
-                    }
-                    if (log.isDebugEnabled()) {
-                        log.debug("b(" + directionBall + "," + distanceBall + ")");
                     }
                     break;
                 default :
@@ -626,8 +487,7 @@ public class Simple implements ControllerPlayer {
                     if (log.isDebugEnabled()) {
                     log.debug("a"); }
                     break;
-                case 2 :
-                case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                     log.debug("Can see anything action");
                     //Will run the player into space if it has to avoid players it avoids, else it turns to the ball
                     if (jgrunIntoSpace() == false) {
@@ -638,54 +498,6 @@ public class Simple implements ControllerPlayer {
                             jgturnAround();
                         }
                     }
-                    break;
-                case 4 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 5 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 6 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 7 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 8 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 9 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 10 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 11 :
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
                     break;
                 default :
                     throw new Error("number must be initialized before move");
@@ -702,59 +514,9 @@ public class Simple implements ControllerPlayer {
                         log.debug("n");
                     }
                     break;
-                case 2 :
-                case 3 :
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
                     //Attacker 1, if player sees nothing it will turn 180
                     jgfinalTurnDirection = 180;
-                    break;
-                case 4 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
-                    break;
-                case 5 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
-                    break;
-                case 6 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
-                    break;
-                case 7 :
-                    jgturnTowardBall();
-                    getPlayer().dash(this.randomDashValueSlow());
-                    getPlayer().turn(20);
-                    if (log.isDebugEnabled()) {
-                    log.debug("a"); }                     
-                    break;
-                case 8 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
-                    break;
-                case 9 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
-                    break;
-                case 10 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
-                    break;
-                case 11 :
-                    jgturnTowardBall();
-                    if (log.isDebugEnabled()) {
-                        log.debug("n");
-                    }
                     break;
                 default :
                     throw new Error("number must be initialized before move");
@@ -773,9 +535,8 @@ public class Simple implements ControllerPlayer {
                         log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
                     }
                     break;
-                case 2 :
-                case 3 :
-                    if (jgPlayerDoesHaveBall() == false && canSeeBall == true) {
+                case 2 : case 3:  case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11:
+                    if (jgPlayerDoesHaveBall() == true && canSeeBall == true) {
                         jgfinalTurnDirection = directionBall;
                         jgfinalKickDirection = -180;
                         jgfinalKickPower = 50;
@@ -787,62 +548,6 @@ public class Simple implements ControllerPlayer {
                             jgfinalTurnDirection = 180;
                         }
                     }
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 4 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 5 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 6 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 7 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 8 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 9 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 10 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
-                    if (log.isDebugEnabled()) {
-                        log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
-                    }
-                    break;
-                case 11 :
-                    //getPlayer().dash(this.randomDashValueFast());
-                    //turnTowardOwnGoal();
                     if (log.isDebugEnabled()) {
                         log.debug("g(" + directionOwnGoal + "," + distanceOwnGoal + ")");
                     }
@@ -882,10 +587,10 @@ public class Simple implements ControllerPlayer {
             log.info(player.distanceFromBall);
             if (player.distanceFromBall < jgPOSSESSIONDISTANCE) {
                 log.info("true");
-                return false;
+                return true;
             }
         }
-        return true;                            
+        return false;                            
     }
 
     /**
