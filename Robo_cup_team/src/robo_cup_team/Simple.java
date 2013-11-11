@@ -67,6 +67,9 @@ public class Simple implements ControllerPlayer {
     private int           finalKickPower = 0;
     private int           finalRunPower = 60;
     private double        finalTurnDirection = 0;
+    private boolean       playOn = false;
+    private boolean       runForBall = true;
+    
     /**
      * Constructs a new simple client.
      */
@@ -93,6 +96,14 @@ public class Simple implements ControllerPlayer {
         canSeeOwnGoal = false;
         canSeeBall    = false;
         canSeeNothing = true;
+        inPossession = false;
+        allPlayers.clear();
+    
+        finalKickDirection = 0.0;
+        finalKickPower = 0;
+        finalRunPower = 60;
+        finalTurnDirection = 0;
+        runForBall = false;
     }
 
     /** {@inheritDoc} */
@@ -123,12 +134,18 @@ public class Simple implements ControllerPlayer {
                     canSeeAnythingAction();
                 }
                 if (finalRunPower != 0.0) {
-                    getPlayer().dash(finalRunPower);
+                    if (this.playOn == true) {
+                        getPlayer().dash(finalRunPower);                        
+                    } else if (this.playOn == false) {
+                        if (this.distanceBall > POSSESSIONDISTANCE) {
+                            getPlayer().dash(finalRunPower);                            
+                        }                        
+                    }
                 }
                 if (finalTurnDirection != 0) {
                     getPlayer().turn(finalTurnDirection);
                 }
-                if (finalKickPower != 0) {
+                if (finalKickPower != 0 && playOn) {
                     getPlayer().kick(finalKickPower, finalKickDirection);
                 }
                 break;
@@ -234,6 +251,7 @@ public class Simple implements ControllerPlayer {
         this.canSeeBall    = true;
         this.distanceBall  = distance;
         this.directionBall = direction;
+        getPlayer().say("going for ball");
         log.info(distance + ", " + POSSESSIONDISTANCE); 
         if (distance < POSSESSIONDISTANCE) {
             log.info("inPossession"); 
@@ -319,12 +337,89 @@ public class Simple implements ControllerPlayer {
                 default :
                     throw new Error("number must be initialized before move");
             }
+        } else if (playMode == PlayMode.PLAY_ON) {
+            
+            switch (this.getPlayer().getNumber()) {
+                case 1 :
+                    this.getPlayer().move(-50, 0);                 
+                    break;
+                case 2 :
+                case 3 :
+                    this.playOn = true;                     
+                    break;
+                case 4 :
+                    this.getPlayer().move(-20, 0);
+                    break;
+                case 5 :
+                    this.getPlayer().move(-25, 10);
+                    break;
+                case 6 :
+                    this.getPlayer().move(-25, -10);
+                    break;
+                case 7 :
+                    this.getPlayer().move(-20, 20);
+                    break;
+                case 8 :
+                    this.getPlayer().move(-20, -20);
+                    break;
+                case 9 :
+                    this.getPlayer().move(-36, 0);
+                    break;
+                case 10 :
+                    this.getPlayer().move(-30, 15);
+                    break;
+                case 11 :
+                    this.getPlayer().move(-30, -15);
+                    break;
+                default :
+                    throw new Error("number must be initialized before move");
+            }
+        } else if (playMode != PlayMode.PLAY_ON) {
+                this.playOn = false; 
         }
     }
 
     /** {@inheritDoc} */
     @Override
-    public void infoHearPlayer(double direction, String message) {}
+    public void infoHearPlayer(double direction, String message) {
+            switch (this.getPlayer().getNumber()) {
+                case 1 :
+                    this.getPlayer().move(-50, 0);                 
+                    break;
+                case 2 :
+                case 3 :
+                    if (message == "going for ball") {
+                        this.runForBall = false;
+                    }                     
+                    break;
+                case 4 :
+                    this.getPlayer().move(-20, 0);
+                    break;
+                case 5 :
+                    this.getPlayer().move(-25, 10);
+                    break;
+                case 6 :
+                    this.getPlayer().move(-25, -10);
+                    break;
+                case 7 :
+                    this.getPlayer().move(-20, 20);
+                    break;
+                case 8 :
+                    this.getPlayer().move(-20, -20);
+                    break;
+                case 9 :
+                    this.getPlayer().move(-36, 0);
+                    break;
+                case 10 :
+                    this.getPlayer().move(-30, 15);
+                    break;
+                case 11 :
+                    this.getPlayer().move(-30, -15);
+                    break;
+                default :
+                    throw new Error("number must be initialized before move");
+            }
+    }
 
     /** {@inheritDoc} */
     @Override
@@ -405,7 +500,7 @@ public class Simple implements ControllerPlayer {
                         kickAtTeamMate();
                     } else {
                         //if noone has the ball turn to it else run into space
-                        if (doesHaveBall() == false) {
+                        if (doesHaveBall() == false && runForBall == true) {
                             log.info("Turned toward ball");
                             turnTowardBall();
                         } else {
@@ -757,7 +852,7 @@ public class Simple implements ControllerPlayer {
         for (int i = 0; i < allPlayers.size(); i++) {
             SeenPlayer player = allPlayers.get(i);
             log.info(player.distanceFromBall);
-            if (player.distanceFromBall < POSSESSIONDISTANCE) {
+            if (player.distanceFromBall < 5.0) {
                 log.info("true");
                 return true;
             }
@@ -804,16 +899,18 @@ public class Simple implements ControllerPlayer {
                 this.finalKickPower = in;
                 this.finalKickDirection = player.direction; 
                 kicked = true;
+                log.info("Ball was kicked to teammate");
             }
         }
         //If the ball hasn't been kicked then the player can't see any other useful players
         //Therefore they will turn to the opponent goal using a series of kicks and run with the ball
         if (!kicked) {
-            if (!Double.isNaN(directionOpponentGoal)) {
+            log.info("Ball not kicked, turn to op goal");
+            if (canSeeOpponentGoal) {
                 if (directionOpponentGoal < -25.0 || directionOpponentGoal > 25.0) {
                     //Turn player towards opponents goal slowly to avoid loosing the ball
-                this.finalKickPower = 3;
-                this.finalKickDirection = 20; 
+                    this.finalKickPower = 3;
+                    this.finalKickDirection = 20; 
                 } else {
                     finalTurnDirection = directionOpponentGoal;
                     dibbleBall();
